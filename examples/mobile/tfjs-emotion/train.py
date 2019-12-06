@@ -13,8 +13,12 @@ run = wandb.init()
 config = run.config
 
 # set hyperparameters
-config.batch_size = 32
-config.num_epochs = 5
+config.batch_size = 512
+config.num_epochs = 35
+config.dense_layer_size = 512
+config.first_layer_conv_width = 3
+config.first_layer_conv_height = 3
+config.dropout = 0.50
 
 input_shape = (48, 48, 1)
 
@@ -76,10 +80,58 @@ val_faces /= 255.
 
 # Define the model here, CHANGEME
 model = tf.keras.Sequential()
+
+model.add(tf.keras.layers.Conv2D(32,
+                                 (config.first_layer_conv_width,config.first_layer_conv_height),
+                                 input_shape=(48, 48, 1),
+                                 activation='relu'))
+model.add(tf.keras.layers.Conv2D(64,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(tf.keras.layers.Dropout(config.dropout))
+
+
+model.add(tf.keras.layers.Conv2D(128,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.Conv2D(256,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(tf.keras.layers.Dropout(config.dropout))
+
+
+model.add(tf.keras.layers.Conv2D(512,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.Conv2D(512,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(tf.keras.layers.Dropout(config.dropout))
+
+
 model.add(tf.keras.layers.Flatten(input_shape=input_shape))
+
+model.add(tf.keras.layers.Dense(config.dense_layer_size, activation='relu'))
+model.add(tf.keras.layers.Dropout(config.dropout))
+model.add(tf.keras.layers.Dense(config.dense_layer_size, activation='relu'))
+model.add(tf.keras.layers.Dropout(config.dropout))
+
+
+          
 model.add(tf.keras.layers.Dense(num_classes, activation="softmax"))
-model.compile(optimizer='adam', loss='categorical_crossentropy',
+
+model.compile(optimizer='Adam', loss='categorical_crossentropy',
               metrics=['accuracy'])
+
+
 
 # log the number of total parameters
 config.total_params = model.count_params()

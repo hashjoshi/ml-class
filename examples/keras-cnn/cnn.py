@@ -11,7 +11,7 @@ config.dropout = 0.2
 config.dense_layer_size = 128
 config.img_width = 28
 config.img_height = 28
-config.epochs = 4
+config.epochs = 20
 
 # load and normalize data
 (X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -40,8 +40,20 @@ model.add(tf.keras.layers.Conv2D(32,
                                  input_shape=(28, 28, 1),
                                  activation='relu'))
 model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(tf.keras.layers.Conv2D(64,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(tf.keras.layers.Conv2D(128,
+                                 (config.first_layer_conv_width,
+                                  config.first_layer_conv_height),
+                                 activation='relu'))
+model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dropout(config.dropout))
 model.add(tf.keras.layers.Dense(config.dense_layer_size, activation='relu'))
+model.add(tf.keras.layers.Dropout(config.dropout))
 model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam',

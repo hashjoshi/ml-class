@@ -21,6 +21,7 @@ num_classes = y_train.shape[1]
 model = tf.keras.models.Sequential()
 model.add(tf.keras.layers.Flatten(input_shape=(img_width, img_height)))
 model.add(tf.keras.layers.Dense(num_classes))
+model.add(tf.keras.layers.Activation('sigmoid'))
 model.compile(loss='mse', optimizer='adam',
               metrics=['accuracy'])
 

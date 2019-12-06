@@ -24,6 +24,8 @@ num_classes = y_train.shape[1]
 # create model
 model = tf.keras.models.Sequential()
 model.add(tf.keras.layers.Flatten(input_shape=(img_width, img_height)))
+model.add(tf.keras.layers.Dense(64, activation='relu'))
+model.add(tf.keras.layers.Dropout(0.2))
 model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam',
               metrics=['accuracy'])
